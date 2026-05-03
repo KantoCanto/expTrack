@@ -91,6 +91,37 @@ export const authStyles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  socialButton: {
+    minHeight: 52,
+    borderRadius: 8,
+    backgroundColor: '#F8F3FF',
+    borderWidth: 1,
+    borderColor: '#F8F3FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  socialButtonText: {
+    fontFamily: 'PlusJakartaSansExtraBold',
+    color: '#15101B',
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#2B2534',
+  },
+  dividerText: {
+    fontFamily: 'PlusJakartaSansBold',
+    color: '#7E7589',
+    fontSize: 12,
+    lineHeight: 16,
+  },
   footerRow: {
     flexDirection: 'row',
     alignItems: 'center',

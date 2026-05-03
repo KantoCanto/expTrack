@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { getAuthErrorMessage } from '@/features/auth/auth-errors';
 import { authStyles as styles } from '@/features/auth/auth-styles';
+import { GoogleSsoButton } from '@/features/auth/google-sso-button';
 
 export default function SignInScreen() {
   const { errors, fetchStatus, signIn } = useSignIn();
@@ -20,6 +22,7 @@ export default function SignInScreen() {
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
+  const [actionError, setActionError] = useState('');
 
   const isSubmitting = fetchStatus === 'fetching';
   const canSubmit = emailAddress.trim().length > 0 && password.length > 0 && !isSubmitting;
@@ -44,36 +47,49 @@ export default function SignInScreen() {
   }
 
   async function handleSubmit() {
-    const { error } = await signIn.password({
-      emailAddress: emailAddress.trim(),
-      password,
-    });
+    setActionError('');
 
-    if (error) {
-      return;
-    }
+    try {
+      const { error } = await signIn.password({
+        emailAddress: emailAddress.trim(),
+        password,
+      });
 
-    if (signIn.status === 'complete') {
-      await finishSignIn();
-      return;
-    }
-
-    if (signIn.status === 'needs_client_trust') {
-      const emailCodeFactor = signIn.supportedSecondFactors.find(
-        (factor) => factor.strategy === 'email_code',
-      );
-
-      if (emailCodeFactor) {
-        await signIn.mfa.sendEmailCode();
+      if (error) {
+        setActionError(getAuthErrorMessage(error));
+        return;
       }
+
+      if (signIn.status === 'complete') {
+        await finishSignIn();
+        return;
+      }
+
+      if (signIn.status === 'needs_client_trust') {
+        const emailCodeFactor = signIn.supportedSecondFactors.find(
+          (factor) => factor.strategy === 'email_code',
+        );
+
+        if (emailCodeFactor) {
+          await signIn.mfa.sendEmailCode();
+        }
+      }
+    } catch (error) {
+      setActionError(getAuthErrorMessage(error));
     }
   }
 
   async function handleVerify() {
-    await signIn.mfa.verifyEmailCode({ code });
+    setActionError('');
 
-    if (signIn.status === 'complete') {
-      await finishSignIn();
+    try {
+      await signIn.mfa.verifyEmailCode({ code });
+
+      if (signIn.status === 'complete') {
+        await finishSignIn();
+      }
+    } catch (error) {
+      setActionError(getAuthErrorMessage(error));
     }
   }
 
@@ -94,6 +110,7 @@ export default function SignInScreen() {
           {errors.fields.code ? (
             <Text style={styles.errorText}>{errors.fields.code.message}</Text>
           ) : null}
+          {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
           <Pressable
             accessibilityRole="button"
             disabled={isSubmitting || code.trim().length === 0}
@@ -157,6 +174,7 @@ export default function SignInScreen() {
         {errors.global?.[0]?.message ? (
           <Text style={styles.errorText}>{errors.global[0]?.message}</Text>
         ) : null}
+        {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
         <Pressable
           accessibilityRole="button"
           disabled={!canSubmit}
@@ -168,6 +186,12 @@ export default function SignInScreen() {
           ]}>
           <Text style={styles.primaryButtonText}>Continue</Text>
         </Pressable>
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>OR</Text>
+          <View style={styles.dividerLine} />
+        </View>
+        <GoogleSsoButton onError={setActionError} />
       </View>
       <View style={styles.footerRow}>
         <Text style={styles.footerText}>No account?</Text>

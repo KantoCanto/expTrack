@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { getAuthErrorMessage } from '@/features/auth/auth-errors';
 import { authStyles as styles } from '@/features/auth/auth-styles';
+import { GoogleSsoButton } from '@/features/auth/google-sso-button';
 
 export default function SignUpScreen() {
   const { isSignedIn } = useAuth();
@@ -21,6 +23,7 @@ export default function SignUpScreen() {
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
+  const [actionError, setActionError] = useState('');
 
   const isSubmitting = fetchStatus === 'fetching';
   const canSubmit = emailAddress.trim().length > 0 && password.length > 0 && !isSubmitting;
@@ -49,21 +52,36 @@ export default function SignUpScreen() {
   }
 
   async function handleSubmit() {
-    const { error } = await signUp.password({
-      emailAddress: emailAddress.trim(),
-      password,
-    });
+    setActionError('');
 
-    if (!error) {
+    try {
+      const { error } = await signUp.password({
+        emailAddress: emailAddress.trim(),
+        password,
+      });
+
+      if (error) {
+        setActionError(getAuthErrorMessage(error));
+        return;
+      }
+
       await signUp.verifications.sendEmailCode();
+    } catch (error) {
+      setActionError(getAuthErrorMessage(error));
     }
   }
 
   async function handleVerify() {
-    await signUp.verifications.verifyEmailCode({ code });
+    setActionError('');
 
-    if (signUp.status === 'complete') {
-      await finishSignUp();
+    try {
+      await signUp.verifications.verifyEmailCode({ code });
+
+      if (signUp.status === 'complete') {
+        await finishSignUp();
+      }
+    } catch (error) {
+      setActionError(getAuthErrorMessage(error));
     }
   }
 
@@ -88,6 +106,7 @@ export default function SignUpScreen() {
           {errors.fields.code ? (
             <Text style={styles.errorText}>{errors.fields.code.message}</Text>
           ) : null}
+          {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
           <Pressable
             accessibilityRole="button"
             disabled={isSubmitting || code.trim().length === 0}
@@ -145,6 +164,7 @@ export default function SignUpScreen() {
         {errors.global?.[0]?.message ? (
           <Text style={styles.errorText}>{errors.global[0]?.message}</Text>
         ) : null}
+        {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
         <Pressable
           accessibilityRole="button"
           disabled={!canSubmit}
@@ -156,6 +176,12 @@ export default function SignUpScreen() {
           ]}>
           <Text style={styles.primaryButtonText}>Create account</Text>
         </Pressable>
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>OR</Text>
+          <View style={styles.dividerLine} />
+        </View>
+        <GoogleSsoButton onError={setActionError} />
         <View nativeID="clerk-captcha" />
       </View>
       <View style={styles.footerRow}>
