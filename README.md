@@ -1,56 +1,54 @@
-# Welcome to your Expo app 👋
+# Expense Tracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+React Native app built with Expo Router and Supabase.
 
-## Get started
+## Stack
 
-1. Install dependencies
+- Expo SDK 55
+- React Native 0.83
+- React 19.2
+- TypeScript
+- Supabase JS client
 
-   ```bash
-   npm install
-   ```
+Expo SDK 54 targets React Native 0.81. This project is on Expo SDK 55 because React Native 0.83 is supported on that Expo track.
 
-2. Start the app
+## Setup
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Install dependencies:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Create your local environment file:
 
-### Other setup steps
+```bash
+cp .env.example .env
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Fill in `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` from your Supabase project settings.
 
-## Learn more
+Start the development server:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npm run start
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Scripts
 
-## Join the community
+- `npm run start` starts Expo.
+- `npm run ios` opens the iOS target.
+- `npm run android` opens the Android target.
+- `npm run web` starts the web target.
+- `npm run lint` runs Expo linting.
 
-Join our community of developers creating universal apps.
+## GitHub
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Create an empty GitHub repository, then connect this local repo:
+
+```bash
+git remote add origin git@github.com:<your-user-or-org>/expense-tracker.git
+git push -u origin main
+```
+
+The GitHub CLI is not installed in this environment, so remote repository creation needs to happen through GitHub.com or after installing `gh`.
