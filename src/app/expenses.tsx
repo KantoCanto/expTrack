@@ -13,16 +13,17 @@ import type { Expense } from '@/features/expenses/types';
 
 export default function ExpensesScreen() {
   const router = useRouter();
-  const { expenses, removeExpense, updateExpenseDate } = useExpenses();
+  const { error, expenses, isLoading, isRemoteSyncEnabled, removeExpense, updateExpenseDate } =
+    useExpenses();
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
 
-  function handleRemoveExpense(id: string) {
-    removeExpense(id);
+  async function handleRemoveExpense(id: string) {
+    await removeExpense(id);
     setSelectedExpense(null);
   }
 
-  function handleUpdateExpenseDate(id: string, date: Date) {
-    updateExpenseDate(id, date);
+  async function handleUpdateExpenseDate(id: string, date: Date) {
+    await updateExpenseDate(id, date);
     setSelectedExpense(null);
   }
 
@@ -42,6 +43,11 @@ export default function ExpensesScreen() {
               onLeftPress={() => router.back()}
               subtitle="Full history"
               title="Expenses"
+            />
+
+            <SectionHeader
+              title={isRemoteSyncEnabled ? 'Supabase sync' : 'Local mode'}
+              meta={error ?? (isLoading ? 'Loading' : isRemoteSyncEnabled ? 'Connected' : 'Demo data')}
             />
 
             <SectionHeader title="All expenses" meta={`${expenses.length} items`} />

@@ -14,3 +14,9 @@ export type Expense = {
   icon: ImageSourcePropType;
   date: Date;
 };
+
+export type AddExpenseInput = {
+  amount: number;
+  category: Category | null;
+  title: string;
+};

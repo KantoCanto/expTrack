@@ -28,6 +28,8 @@ cp .env.example .env
 
 Fill in `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` from your Supabase project settings.
 
+Create the Supabase table by running [supabase/schema.sql](supabase/schema.sql) in the Supabase SQL editor.
+
 Start the development server:
 
 ```bash

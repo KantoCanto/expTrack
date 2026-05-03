@@ -1,52 +1,152 @@
-import { createContext, PropsWithChildren, useContext, useState } from 'react';
+import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 import { categoryIcons, initialExpenses, uncategorizedIcon } from './expense-data';
-import type { Category, Expense } from './types';
-
-type AddExpenseInput = {
-  amount: number;
-  category: Category | null;
-  title: string;
-};
+import {
+  deleteExpense,
+  fetchExpenses,
+  insertExpense,
+  updateExpenseDate as updatePersistedExpenseDate,
+} from './expense-repository';
+import type { AddExpenseInput, Expense } from './types';
 
 type ExpensesContextValue = {
-  addExpense: (expense: AddExpenseInput) => void;
+  addExpense: (expense: AddExpenseInput) => Promise<void>;
+  error: string | null;
   expenses: Expense[];
-  removeExpense: (id: string) => void;
-  updateExpenseDate: (id: string, date: Date) => void;
+  isLoading: boolean;
+  isRemoteSyncEnabled: boolean;
+  refreshExpenses: () => Promise<void>;
+  removeExpense: (id: string) => Promise<void>;
+  updateExpenseDate: (id: string, date: Date) => Promise<void>;
 };
 
 const ExpensesContext = createContext<ExpensesContextValue | null>(null);
 
 export function ExpensesProvider({ children }: PropsWithChildren) {
-  const [expenses, setExpenses] = useState(initialExpenses);
+  const [expenses, setExpenses] = useState(isSupabaseConfigured ? [] : initialExpenses);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
 
-  function addExpense({ title, amount, category }: AddExpenseInput) {
+  useEffect(() => {
+    void refreshExpenses();
+  }, []);
+
+  async function refreshExpenses() {
+    if (!isSupabaseConfigured) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const remoteExpenses = await fetchExpenses();
+      setExpenses(remoteExpenses ?? []);
+    } catch (requestError) {
+      setError(getErrorMessage(requestError));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function addExpense({ title, amount, category }: AddExpenseInput) {
+    const localExpense: Expense = {
+      id: `${Date.now()}`,
+      title,
+      amount,
+      category,
+      icon: category ? categoryIcons[category] : uncategorizedIcon,
+      date: new Date(),
+    };
+
     setExpenses((currentExpenses) => [
-      {
-        id: `${Date.now()}`,
-        title,
-        amount,
-        category,
-        icon: category ? categoryIcons[category] : uncategorizedIcon,
-        date: new Date(),
-      },
+      localExpense,
       ...currentExpenses,
     ]);
+
+    if (!isSupabaseConfigured) {
+      return;
+    }
+
+    setError(null);
+
+    try {
+      const remoteExpense = await insertExpense({ title, amount, category });
+
+      if (remoteExpense) {
+        setExpenses((currentExpenses) =>
+          currentExpenses.map((expense) =>
+            expense.id === localExpense.id ? remoteExpense : expense,
+          ),
+        );
+      }
+    } catch (requestError) {
+      setExpenses((currentExpenses) =>
+        currentExpenses.filter((expense) => expense.id !== localExpense.id),
+      );
+      setError(getErrorMessage(requestError));
+    }
   }
 
-  function removeExpense(id: string) {
+  async function removeExpense(id: string) {
+    const previousExpenses = expenses;
     setExpenses((currentExpenses) => currentExpenses.filter((expense) => expense.id !== id));
+
+    if (!isSupabaseConfigured) {
+      return;
+    }
+
+    setError(null);
+
+    try {
+      await deleteExpense(id);
+    } catch (requestError) {
+      setExpenses(previousExpenses);
+      setError(getErrorMessage(requestError));
+    }
   }
 
-  function updateExpenseDate(id: string, date: Date) {
+  async function updateExpenseDate(id: string, date: Date) {
+    const previousExpenses = expenses;
     setExpenses((currentExpenses) =>
       currentExpenses.map((expense) => (expense.id === id ? { ...expense, date } : expense)),
     );
+
+    if (!isSupabaseConfigured) {
+      return;
+    }
+
+    setError(null);
+
+    try {
+      const remoteExpense = await updatePersistedExpenseDate(id, date);
+
+      if (remoteExpense) {
+        setExpenses((currentExpenses) =>
+          currentExpenses.map((expense) => (expense.id === id ? remoteExpense : expense)),
+        );
+      }
+    } catch (requestError) {
+      setExpenses(previousExpenses);
+      setError(getErrorMessage(requestError));
+    }
   }
 
   return (
-    <ExpensesContext.Provider value={{ addExpense, expenses, removeExpense, updateExpenseDate }}>
+    <ExpensesContext.Provider
+      value={{
+        addExpense,
+        error,
+        expenses,
+        isLoading,
+        isRemoteSyncEnabled: isSupabaseConfigured,
+        refreshExpenses,
+        removeExpense,
+        updateExpenseDate,
+      }}>
       {children}
     </ExpensesContext.Provider>
   );
@@ -60,4 +160,12 @@ export function useExpenses() {
   }
 
   return context;
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Unable to sync expenses.';
 }
