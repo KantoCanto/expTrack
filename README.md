@@ -17,7 +17,7 @@ Expo SDK 54 targets React Native 0.81. This project is on Expo SDK 55 because Re
 Install dependencies:
 
 ```bash
-npm install
+corepack yarn install
 ```
 
 Create your local environment file:
@@ -31,16 +31,16 @@ Fill in `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` from your
 Start the development server:
 
 ```bash
-npm run start
+corepack yarn start
 ```
 
 ## Scripts
 
-- `npm run start` starts Expo.
-- `npm run ios` opens the iOS target.
-- `npm run android` opens the Android target.
-- `npm run web` starts the web target.
-- `npm run lint` runs Expo linting.
+- `corepack yarn start` starts Expo.
+- `corepack yarn ios` opens the iOS target.
+- `corepack yarn android` opens the Android target.
+- `corepack yarn web` starts the web target.
+- `corepack yarn lint` runs Expo linting.
 
 ## GitHub
 
