@@ -1,0 +1,121 @@
+import { StyleSheet } from 'react-native';
+
+export const authStyles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#09080D',
+    alignItems: 'center',
+  },
+  safeArea: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 430,
+  },
+  content: {
+    flexGrow: 1,
+    paddingHorizontal: 22,
+    paddingTop: 24,
+    paddingBottom: 36,
+    justifyContent: 'center',
+    gap: 18,
+  },
+  eyebrow: {
+    fontFamily: 'PlusJakartaSansBold',
+    color: '#FF7A1A',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  title: {
+    fontFamily: 'PlusJakartaSansExtraBold',
+    color: '#F8F3FF',
+    fontSize: 36,
+    lineHeight: 42,
+  },
+  subtitle: {
+    fontFamily: 'PlusJakartaSansMedium',
+    color: '#9A91A6',
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  formCard: {
+    borderRadius: 8,
+    backgroundColor: '#17141E',
+    borderWidth: 1,
+    borderColor: '#272230',
+    padding: 18,
+    gap: 12,
+  },
+  label: {
+    fontFamily: 'PlusJakartaSansBold',
+    color: '#F8F3FF',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  input: {
+    minHeight: 54,
+    borderRadius: 8,
+    backgroundColor: '#0F0D14',
+    borderWidth: 1,
+    borderColor: '#2B2534',
+    color: '#F8F3FF',
+    paddingHorizontal: 16,
+    fontFamily: 'PlusJakartaSansSemiBold',
+    fontSize: 15,
+  },
+  primaryButton: {
+    minHeight: 54,
+    borderRadius: 8,
+    backgroundColor: '#FF7A1A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.54,
+  },
+  primaryButtonText: {
+    fontFamily: 'PlusJakartaSansExtraBold',
+    color: '#160B02',
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  secondaryButton: {
+    minHeight: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryButtonText: {
+    fontFamily: 'PlusJakartaSansBold',
+    color: '#FF7A1A',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  footerText: {
+    fontFamily: 'PlusJakartaSansMedium',
+    color: '#9A91A6',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  footerLink: {
+    fontFamily: 'PlusJakartaSansBold',
+    color: '#FF7A1A',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  errorText: {
+    fontFamily: 'PlusJakartaSansMedium',
+    color: '#FFB199',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  pressed: {
+    opacity: 0.78,
+  },
+});

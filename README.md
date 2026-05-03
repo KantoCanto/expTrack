@@ -8,6 +8,7 @@ React Native app built with Expo Router and Supabase.
 - React Native 0.83
 - React 19.2
 - TypeScript
+- Clerk Expo SDK
 - Supabase JS client
 
 Expo SDK 54 targets React Native 0.81. This project is on Expo SDK 55 because React Native 0.83 is supported on that Expo track.
@@ -26,7 +27,7 @@ Create your local environment file:
 cp .env.example .env
 ```
 
-Fill in `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` from your Supabase project settings.
+Fill in `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` from Clerk, plus `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` from your Supabase project settings.
 
 Create the Supabase table by running [supabase/schema.sql](supabase/schema.sql) in the Supabase SQL editor.
 

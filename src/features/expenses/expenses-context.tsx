@@ -1,4 +1,5 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { useUser } from '@clerk/expo';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 
 import { isSupabaseConfigured } from '@/lib/supabase';
 
@@ -25,16 +26,20 @@ type ExpensesContextValue = {
 const ExpensesContext = createContext<ExpensesContextValue | null>(null);
 
 export function ExpensesProvider({ children }: PropsWithChildren) {
+  const { user } = useUser();
+  const clerkUserId = user?.id ?? null;
   const [expenses, setExpenses] = useState(isSupabaseConfigured ? [] : initialExpenses);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
 
-  useEffect(() => {
-    void refreshExpenses();
-  }, []);
-
-  async function refreshExpenses() {
+  const refreshExpenses = useCallback(async () => {
     if (!isSupabaseConfigured) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (!clerkUserId) {
+      setExpenses([]);
       setIsLoading(false);
       return;
     }
@@ -43,14 +48,18 @@ export function ExpensesProvider({ children }: PropsWithChildren) {
     setError(null);
 
     try {
-      const remoteExpenses = await fetchExpenses();
+      const remoteExpenses = await fetchExpenses(clerkUserId);
       setExpenses(remoteExpenses ?? []);
     } catch (requestError) {
       setError(getErrorMessage(requestError));
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [clerkUserId]);
+
+  useEffect(() => {
+    void refreshExpenses();
+  }, [refreshExpenses]);
 
   async function addExpense({ title, amount, category }: AddExpenseInput) {
     const localExpense: Expense = {
@@ -71,10 +80,18 @@ export function ExpensesProvider({ children }: PropsWithChildren) {
       return;
     }
 
+    if (!clerkUserId) {
+      setExpenses((currentExpenses) =>
+        currentExpenses.filter((expense) => expense.id !== localExpense.id),
+      );
+      setError('Sign in again before syncing expenses.');
+      return;
+    }
+
     setError(null);
 
     try {
-      const remoteExpense = await insertExpense({ title, amount, category });
+      const remoteExpense = await insertExpense({ title, amount, category }, clerkUserId);
 
       if (remoteExpense) {
         setExpenses((currentExpenses) =>
@@ -99,10 +116,16 @@ export function ExpensesProvider({ children }: PropsWithChildren) {
       return;
     }
 
+    if (!clerkUserId) {
+      setExpenses(previousExpenses);
+      setError('Sign in again before deleting expenses.');
+      return;
+    }
+
     setError(null);
 
     try {
-      await deleteExpense(id);
+      await deleteExpense(id, clerkUserId);
     } catch (requestError) {
       setExpenses(previousExpenses);
       setError(getErrorMessage(requestError));
@@ -119,10 +142,16 @@ export function ExpensesProvider({ children }: PropsWithChildren) {
       return;
     }
 
+    if (!clerkUserId) {
+      setExpenses(previousExpenses);
+      setError('Sign in again before updating expenses.');
+      return;
+    }
+
     setError(null);
 
     try {
-      const remoteExpense = await updatePersistedExpenseDate(id, date);
+      const remoteExpense = await updatePersistedExpenseDate(id, date, clerkUserId);
 
       if (remoteExpense) {
         setExpenses((currentExpenses) =>

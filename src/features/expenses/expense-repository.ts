@@ -8,6 +8,7 @@ type ExpenseRow = {
   title: string;
   amount: number | string;
   category: string | null;
+  clerk_user_id: string;
   spent_on: string;
 };
 
@@ -15,17 +16,19 @@ type ExpenseInsert = {
   title: string;
   amount: number;
   category: Category | null;
+  clerk_user_id: string;
   spent_on: string;
 };
 
-export async function fetchExpenses() {
+export async function fetchExpenses(clerkUserId: string) {
   if (!isSupabaseConfigured || !supabase) {
     return null;
   }
 
   const { data, error } = await supabase
     .from('expenses')
-    .select('id, title, amount, category, spent_on')
+    .select('id, title, amount, category, clerk_user_id, spent_on')
+    .eq('clerk_user_id', clerkUserId)
     .order('spent_on', { ascending: false })
     .order('created_at', { ascending: false });
 
@@ -36,20 +39,21 @@ export async function fetchExpenses() {
   return (data ?? []).map(mapExpenseRow);
 }
 
-export async function insertExpense(input: AddExpenseInput) {
+export async function insertExpense(input: AddExpenseInput, clerkUserId: string) {
   if (!isSupabaseConfigured || !supabase) {
     return null;
   }
 
   const payload: ExpenseInsert = {
     ...input,
+    clerk_user_id: clerkUserId,
     spent_on: toDateColumnValue(new Date()),
   };
 
   const { data, error } = await supabase
     .from('expenses')
     .insert(payload)
-    .select('id, title, amount, category, spent_on')
+    .select('id, title, amount, category, clerk_user_id, spent_on')
     .single();
 
   if (error) {
@@ -59,19 +63,23 @@ export async function insertExpense(input: AddExpenseInput) {
   return mapExpenseRow(data);
 }
 
-export async function deleteExpense(id: string) {
+export async function deleteExpense(id: string, clerkUserId: string) {
   if (!isSupabaseConfigured || !supabase) {
     return;
   }
 
-  const { error } = await supabase.from('expenses').delete().eq('id', id);
+  const { error } = await supabase
+    .from('expenses')
+    .delete()
+    .eq('id', id)
+    .eq('clerk_user_id', clerkUserId);
 
   if (error) {
     throw error;
   }
 }
 
-export async function updateExpenseDate(id: string, date: Date) {
+export async function updateExpenseDate(id: string, date: Date, clerkUserId: string) {
   if (!isSupabaseConfigured || !supabase) {
     return null;
   }
@@ -80,7 +88,8 @@ export async function updateExpenseDate(id: string, date: Date) {
     .from('expenses')
     .update({ spent_on: toDateColumnValue(date) })
     .eq('id', id)
-    .select('id, title, amount, category, spent_on')
+    .eq('clerk_user_id', clerkUserId)
+    .select('id, title, amount, category, clerk_user_id, spent_on')
     .single();
 
   if (error) {
