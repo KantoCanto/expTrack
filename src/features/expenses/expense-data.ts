@@ -40,6 +40,8 @@ export const categoryIcons: Record<Category, ImageSourcePropType> = {
 
 export const uncategorizedIcon = require('@/assets/icons/wallet.png');
 
+export const today = new Date();
+
 export const initialExpenses: Expense[] = [
   {
     id: 'seed-1',
@@ -47,6 +49,7 @@ export const initialExpenses: Expense[] = [
     amount: 15.49,
     category: 'Subscriptions',
     icon: require('@/assets/icons/netflix.png'),
+    date: today,
   },
   {
     id: 'seed-2',
@@ -54,6 +57,7 @@ export const initialExpenses: Expense[] = [
     amount: 84.2,
     category: 'Groceries',
     icon: require('@/assets/icons/wallet.png'),
+    date: today,
   },
   {
     id: 'seed-3',
@@ -61,10 +65,17 @@ export const initialExpenses: Expense[] = [
     amount: 4.8,
     category: null,
     icon: uncategorizedIcon,
+    date: today,
   },
 ];
 
 export const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
+});
+
+export const expenseDateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
 });

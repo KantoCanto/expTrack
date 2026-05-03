@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppHeader } from '@/features/expenses/components/app-header';
@@ -7,24 +8,23 @@ import { CategoryPickerModal } from '@/features/expenses/components/category-pic
 import { ExpenseForm } from '@/features/expenses/components/expense-form';
 import { ExpenseList } from '@/features/expenses/components/expense-list';
 import { FilterChips } from '@/features/expenses/components/filter-chips';
+import { ExpenseActionsModal } from '@/features/expenses/components/expense-actions-modal';
 import { SectionHeader } from '@/features/expenses/components/section-header';
 import { SpendingHero } from '@/features/expenses/components/spending-hero';
-import {
-  categories,
-  categoryIcons,
-  initialExpenses,
-  uncategorizedIcon,
-} from '@/features/expenses/expense-data';
+import { categories } from '@/features/expenses/expense-data';
 import { styles } from '@/features/expenses/expense-styles';
-import type { Category, ExpenseFilter } from '@/features/expenses/types';
+import { useExpenses } from '@/features/expenses/expenses-context';
+import type { Category, Expense, ExpenseFilter } from '@/features/expenses/types';
 
 export default function HomeScreen() {
-  const [expenses, setExpenses] = useState(initialExpenses);
+  const router = useRouter();
+  const { addExpense: createExpense, expenses, removeExpense, updateExpenseDate } = useExpenses();
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<Category | null>(null);
   const [activeFilter, setActiveFilter] = useState<ExpenseFilter>('All');
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
 
   const filterOptions: ExpenseFilter[] = ['All', 'Uncategorized', ...categories];
 
@@ -59,23 +59,24 @@ export default function HomeScreen() {
       return;
     }
 
-    setExpenses((currentExpenses) => [
-      {
-        id: `${Date.now()}`,
-        title: trimmedTitle,
-        amount: parsedAmount,
-        category,
-        icon: category ? categoryIcons[category] : uncategorizedIcon,
-      },
-      ...currentExpenses,
-    ]);
+    createExpense({
+      title: trimmedTitle,
+      amount: parsedAmount,
+      category,
+    });
     setTitle('');
     setAmount('');
     setCategory(null);
   }
 
-  function removeExpense(id: string) {
-    setExpenses((currentExpenses) => currentExpenses.filter((expense) => expense.id !== id));
+  function handleRemoveExpense(id: string) {
+    removeExpense(id);
+    setSelectedExpense(null);
+  }
+
+  function handleUpdateExpenseDate(id: string, date: Date) {
+    updateExpenseDate(id, date);
+    setSelectedExpense(null);
   }
 
   function selectCategory(nextCategory: Category | null) {
@@ -93,7 +94,7 @@ export default function HomeScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled">
-            <AppHeader />
+            <AppHeader onLeftPress={() => router.push('/expenses')} />
 
             <SpendingHero
               activeFilter={activeFilter}
@@ -119,7 +120,7 @@ export default function HomeScreen() {
             />
 
             <SectionHeader title="Recent expenses" meta={`${filteredExpenses.length} items`} />
-            <ExpenseList expenses={filteredExpenses} onRemoveExpense={removeExpense} />
+            <ExpenseList expenses={filteredExpenses} onOpenExpenseActions={setSelectedExpense} />
           </ScrollView>
         </KeyboardAvoidingView>
 
@@ -128,6 +129,13 @@ export default function HomeScreen() {
           onClose={() => setCategoryPickerOpen(false)}
           onSelectCategory={selectCategory}
           visible={categoryPickerOpen}
+        />
+
+        <ExpenseActionsModal
+          expense={selectedExpense}
+          onClose={() => setSelectedExpense(null)}
+          onDeleteExpense={handleRemoveExpense}
+          onUpdateDate={handleUpdateExpenseDate}
         />
       </SafeAreaView>
     </View>

@@ -228,7 +228,28 @@ export const styles = StyleSheet.create({
     color: '#15101B',
   },
   expenseList: {
-    gap: 12,
+    gap: 18,
+  },
+  expenseGroup: {
+    gap: 10,
+  },
+  expenseGroupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 2,
+  },
+  expenseGroupTitle: {
+    fontFamily: 'PlusJakartaSansBold',
+    color: '#F8F3FF',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  expenseGroupMeta: {
+    fontFamily: 'PlusJakartaSansMedium',
+    color: '#80778B',
+    fontSize: 12,
+    lineHeight: 16,
   },
   expenseRow: {
     minHeight: 78,
@@ -276,21 +297,21 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
   },
-  removeButton: {
+  rowMenuButton: {
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: '#241A1C',
+    backgroundColor: '#211B29',
     borderWidth: 1,
-    borderColor: '#3B2729',
+    borderColor: '#332B3D',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  removeButtonText: {
+  rowMenuButtonText: {
     fontFamily: 'PlusJakartaSansExtraBold',
-    color: '#FF7A1A',
-    fontSize: 18,
-    lineHeight: 18,
+    color: '#F8F3FF',
+    fontSize: 16,
+    lineHeight: 16,
     includeFontPadding: false,
     textAlign: 'center',
     textAlignVertical: 'center',
@@ -353,6 +374,24 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     marginTop: -8,
+  },
+  actionGroup: {
+    gap: 10,
+  },
+  dangerButton: {
+    minHeight: 54,
+    borderRadius: 8,
+    backgroundColor: '#241A1C',
+    borderWidth: 1,
+    borderColor: '#3B2729',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dangerButtonText: {
+    fontFamily: 'PlusJakartaSansExtraBold',
+    color: '#FF7A1A',
+    fontSize: 15,
+    lineHeight: 20,
   },
   categoryGrid: {
     flexDirection: 'row',

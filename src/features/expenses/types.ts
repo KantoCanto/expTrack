@@ -12,4 +12,5 @@ export type Expense = {
   amount: number;
   category: Category | null;
   icon: ImageSourcePropType;
+  date: Date;
 };

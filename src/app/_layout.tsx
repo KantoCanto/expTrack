@@ -2,6 +2,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import React from 'react';
 
+import { ExpensesProvider } from '@/features/expenses/expenses-context';
+
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     PlusJakartaSans: require('@/assets/fonts/PlusJakartaSans-Regular.ttf'),
@@ -16,10 +18,12 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    />
+    <ExpensesProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+    </ExpensesProvider>
   );
 }
