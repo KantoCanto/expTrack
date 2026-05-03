@@ -664,8 +664,11 @@ const styles = StyleSheet.create({
   removeButtonText: {
     fontFamily: 'PlusJakartaSansExtraBold',
     color: '#FF7A1A',
-    fontSize: 20,
-    lineHeight: 24,
+    fontSize: 18,
+    lineHeight: 18,
+    includeFontPadding: false,
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   emptyCard: {
     borderRadius: 8,
