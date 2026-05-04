@@ -52,8 +52,8 @@ export function AppHeader({
         accessibilityRole="button"
         accessibilityLabel="Sign out"
         onPress={() => signOut()}
-        style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}>
-        <Image source={require('@/assets/icons/setting.png')} style={styles.navIcon} />
+        style={({ pressed }) => [styles.signOutButton, pressed && styles.pressed]}>
+        <Text style={styles.signOutButtonText}>Sign out</Text>
       </Pressable>
     </View>
   );

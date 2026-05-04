@@ -8,7 +8,7 @@ export type ExpenseFilter = Category | 'All' | 'Uncategorized';
 
 export type Expense = {
   id: string;
-  title: string;
+  title: string | null;
   amount: number;
   category: Category | null;
   icon: ImageSourcePropType;
@@ -18,5 +18,5 @@ export type Expense = {
 export type AddExpenseInput = {
   amount: number;
   category: Category | null;
-  title: string;
+  title?: string | null;
 };

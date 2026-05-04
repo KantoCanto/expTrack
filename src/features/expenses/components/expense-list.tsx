@@ -64,13 +64,15 @@ type ExpenseRowProps = {
 };
 
 function ExpenseRow({ expense, onOpenExpenseActions, showDate = false }: ExpenseRowProps) {
+  const expenseLabel = expense.title || expense.category || 'Expense';
+
   return (
     <View style={styles.expenseRow}>
       <View style={styles.expenseIconFrame}>
         <Image source={expense.icon} style={styles.expenseIcon} />
       </View>
       <View style={styles.expenseCopy}>
-        <Text style={styles.expenseTitle}>{expense.title}</Text>
+        <Text style={styles.expenseTitle}>{expenseLabel}</Text>
         <Text style={styles.expenseCategory}>
           {expense.category ?? 'No category'}
           {showDate ? ` · ${expenseDateFormatter.format(expense.date)}` : ''}
@@ -79,7 +81,7 @@ function ExpenseRow({ expense, onOpenExpenseActions, showDate = false }: Expense
       <Text style={styles.expenseAmount}>{currencyFormatter.format(expense.amount)}</Text>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Open actions for ${expense.title}`}
+        accessibilityLabel={`Open actions for ${expenseLabel}`}
         onPress={() => onOpenExpenseActions(expense)}
         style={({ pressed }) => [styles.rowMenuButton, pressed && styles.pressed]}>
         <Text style={styles.rowMenuButtonText}>...</Text>

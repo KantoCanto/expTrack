@@ -1,6 +1,6 @@
 create table if not exists public.expenses (
   id uuid primary key default gen_random_uuid(),
-  title text not null,
+  title text,
   amount numeric(12, 2) not null check (amount > 0),
   category text,
   clerk_user_id text not null,
@@ -17,6 +17,9 @@ update public.expenses
 
 alter table public.expenses
   alter column clerk_user_id set not null;
+
+alter table public.expenses
+  alter column title drop not null;
 
 create index if not exists expenses_clerk_user_id_idx
   on public.expenses (clerk_user_id);

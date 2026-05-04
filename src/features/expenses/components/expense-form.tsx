@@ -33,8 +33,8 @@ export function ExpenseForm({
       <TextInput
         value={title}
         onChangeText={onTitleChange}
-        placeholder="Name"
-        placeholderTextColor="#77717F"
+        placeholder="Description (optional)"
+        placeholderTextColor="#9B8063"
         style={styles.input}
       />
 
@@ -42,7 +42,7 @@ export function ExpenseForm({
         value={amount}
         onChangeText={onAmountChange}
         placeholder="Amount"
-        placeholderTextColor="#77717F"
+        placeholderTextColor="#9B8063"
         keyboardType="decimal-pad"
         style={styles.input}
       />

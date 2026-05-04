@@ -1,20 +1,26 @@
 import { useAuth, useSignUp } from '@clerk/expo';
 import { type Href, Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Platform, Pressable, Text, TextInput, View } from 'react-native';
 
 import { getAuthErrorMessage } from '@/features/auth/auth-errors';
-import { authStyles as styles } from '@/features/auth/auth-styles';
+import { AuthFrame } from '@/features/auth/auth-frame';
 import { GoogleSsoButton } from '@/features/auth/google-sso-button';
+
+const cardClassName = 'gap-3 rounded-lg border border-[#E4C8A8] bg-[#FFF7ED] p-[18px]';
+const inputClassName =
+  'min-h-[54px] rounded-lg border border-[#E0BE95] bg-[#FBEEDC] px-4 font-jakarta-semibold text-[15px] text-[#4A2A16]';
+const labelClassName = 'font-jakarta-bold text-[13px] leading-[18px] text-[#4A2A16]';
+const errorClassName = 'font-jakarta-medium text-[13px] leading-[18px] text-[#9A3F16]';
+const subtitleClassName = 'font-jakarta-medium text-[15px] leading-[22px] text-[#8A6A4E]';
+const primaryButtonClassName =
+  'mt-1 min-h-[54px] items-center justify-center rounded-lg bg-[#8F3D12] active:opacity-[0.78]';
+const primaryButtonTextClassName =
+  'font-jakarta-extrabold text-[15px] leading-5 text-[#FFF8EC]';
+const secondaryButtonClassName =
+  'min-h-12 items-center justify-center rounded-lg active:opacity-[0.78]';
+const secondaryButtonTextClassName = 'font-jakarta-bold text-sm leading-5 text-[#B9571D]';
+const disabledClassName = 'opacity-[0.54]';
 
 export default function SignUpScreen() {
   const { isSignedIn } = useAuth();
@@ -91,38 +97,42 @@ export default function SignUpScreen() {
 
   if (needsEmailVerification) {
     return (
-      <AuthFrame eyebrow="One more step" title="Verify email">
-        <View style={styles.formCard}>
-          <Text style={styles.subtitle}>Enter the code Clerk sent to your inbox.</Text>
+      <AuthFrame
+        eyebrow="One more step"
+        fallbackHref="/sign-in"
+        showBackButton
+        subtitle="Create a Clerk user to keep this tracker private."
+        title="Verify email">
+        <View className={cardClassName}>
+          <Text className={subtitleClassName}>Enter the code Clerk sent to your inbox.</Text>
           <TextInput
             autoComplete="one-time-code"
             keyboardType="number-pad"
             onChangeText={setCode}
             placeholder="Verification code"
-            placeholderTextColor="#766D82"
-            style={styles.input}
+            placeholderTextColor="#9B8063"
+            className={inputClassName}
             value={code}
           />
           {errors.fields.code ? (
-            <Text style={styles.errorText}>{errors.fields.code.message}</Text>
+            <Text className={errorClassName}>{errors.fields.code.message}</Text>
           ) : null}
-          {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
+          {actionError ? <Text className={errorClassName}>{actionError}</Text> : null}
           <Pressable
             accessibilityRole="button"
             disabled={isSubmitting || code.trim().length === 0}
             onPress={handleVerify}
-            style={({ pressed }) => [
-              styles.primaryButton,
-              (isSubmitting || code.trim().length === 0) && styles.primaryButtonDisabled,
-              pressed && styles.pressed,
-            ]}>
-            <Text style={styles.primaryButtonText}>Verify</Text>
+            className={[
+              primaryButtonClassName,
+              isSubmitting || code.trim().length === 0 ? disabledClassName : '',
+            ].join(' ')}>
+            <Text className={primaryButtonTextClassName}>Verify</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => signUp.verifications.sendEmailCode()}
-            style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
-            <Text style={styles.secondaryButtonText}>Send a new code</Text>
+            className={secondaryButtonClassName}>
+            <Text className={secondaryButtonTextClassName}>Send a new code</Text>
           </Pressable>
         </View>
       </AuthFrame>
@@ -130,98 +140,69 @@ export default function SignUpScreen() {
   }
 
   return (
-    <AuthFrame eyebrow="Create account" title="Sign up">
-      <View style={styles.formCard}>
-        <Text style={styles.label}>Email address</Text>
+    <AuthFrame
+      eyebrow="Create account"
+      subtitle="Create a Clerk user to keep this tracker private."
+      title="Sign up">
+      <View className={cardClassName}>
+        <Text className={labelClassName}>Email address</Text>
         <TextInput
           autoCapitalize="none"
           autoComplete="email"
           keyboardType="email-address"
           onChangeText={setEmailAddress}
           placeholder="you@example.com"
-          placeholderTextColor="#766D82"
-          style={styles.input}
+          placeholderTextColor="#9B8063"
+          className={inputClassName}
           textContentType="emailAddress"
           value={emailAddress}
         />
         {errors.fields.emailAddress ? (
-          <Text style={styles.errorText}>{errors.fields.emailAddress.message}</Text>
+          <Text className={errorClassName}>{errors.fields.emailAddress.message}</Text>
         ) : null}
-        <Text style={styles.label}>Password</Text>
+        <Text className={labelClassName}>Password</Text>
         <TextInput
           autoComplete="new-password"
           onChangeText={setPassword}
           placeholder="Password"
-          placeholderTextColor="#766D82"
+          placeholderTextColor="#9B8063"
           secureTextEntry
-          style={styles.input}
+          className={inputClassName}
           textContentType="newPassword"
           value={password}
         />
         {errors.fields.password ? (
-          <Text style={styles.errorText}>{errors.fields.password.message}</Text>
+          <Text className={errorClassName}>{errors.fields.password.message}</Text>
         ) : null}
         {errors.global?.[0]?.message ? (
-          <Text style={styles.errorText}>{errors.global[0]?.message}</Text>
+          <Text className={errorClassName}>{errors.global[0]?.message}</Text>
         ) : null}
-        {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
+        {actionError ? <Text className={errorClassName}>{actionError}</Text> : null}
         <Pressable
           accessibilityRole="button"
           disabled={!canSubmit}
           onPress={handleSubmit}
-          style={({ pressed }) => [
-            styles.primaryButton,
-            !canSubmit && styles.primaryButtonDisabled,
-            pressed && styles.pressed,
-          ]}>
-          <Text style={styles.primaryButtonText}>Create account</Text>
+          className={[primaryButtonClassName, !canSubmit ? disabledClassName : ''].join(' ')}>
+          <Text className={primaryButtonTextClassName}>Create account</Text>
         </Pressable>
-        <View style={styles.dividerRow}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>OR</Text>
-          <View style={styles.dividerLine} />
+        <View className="flex-row items-center gap-2.5">
+          <View className="h-px flex-1 bg-[#E0BE95]" />
+          <Text className="font-jakarta-bold text-xs leading-4 text-[#8A6A4E]">OR</Text>
+          <View className="h-px flex-1 bg-[#E0BE95]" />
         </View>
         <GoogleSsoButton onError={setActionError} />
         <View nativeID="clerk-captcha" />
       </View>
-      <View style={styles.footerRow}>
-        <Text style={styles.footerText}>Already have an account?</Text>
+      <View className="flex-row items-center justify-center gap-1.5">
+        <Text className="font-jakarta-medium text-sm leading-5 text-[#8A6A4E]">
+          Already have an account?
+        </Text>
         <Link href="/sign-in" asChild>
           <Pressable>
-            <Text style={styles.footerLink}>Sign in</Text>
+            <Text className="font-jakarta-bold text-sm leading-5 text-[#B9571D]">Sign in</Text>
           </Pressable>
         </Link>
       </View>
     </AuthFrame>
-  );
-}
-
-type AuthFrameProps = {
-  children: React.ReactNode;
-  eyebrow: string;
-  title: string;
-};
-
-function AuthFrame({ children, eyebrow, title }: AuthFrameProps) {
-  return (
-    <View style={styles.screen}>
-      <SafeAreaView style={styles.safeArea}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{ flex: 1 }}>
-          <ScrollView
-            contentContainerStyle={styles.content}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}>
-            <View>
-              <Text style={styles.eyebrow}>{eyebrow}</Text>
-              <Text style={styles.title}>{title}</Text>
-              <Text style={styles.subtitle}>Create a Clerk user to keep this tracker private.</Text>
-            </View>
-            {children}
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </View>
   );
 }

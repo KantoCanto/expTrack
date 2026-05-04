@@ -5,7 +5,7 @@ import type { AddExpenseInput, Category, Expense } from './types';
 
 type ExpenseRow = {
   id: string;
-  title: string;
+  title: string | null;
   amount: number | string;
   category: string | null;
   clerk_user_id: string;
@@ -13,7 +13,7 @@ type ExpenseRow = {
 };
 
 type ExpenseInsert = {
-  title: string;
+  title: string | null;
   amount: number;
   category: Category | null;
   clerk_user_id: string;
@@ -46,6 +46,7 @@ export async function insertExpense(input: AddExpenseInput, clerkUserId: string)
 
   const payload: ExpenseInsert = {
     ...input,
+    title: input.title?.trim() || null,
     clerk_user_id: clerkUserId,
     spent_on: toDateColumnValue(new Date()),
   };

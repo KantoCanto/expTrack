@@ -71,24 +71,23 @@ export default function HomeScreen() {
 		const trimmedTitle = title.trim();
 		const parsedAmount = Number(amount.replace(',', '.'));
 
-		if (!trimmedTitle) {
-			Alert.alert('Missing description', 'Add a short name for this expense.');
-			return;
-		}
-
 		if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
 			Alert.alert('Invalid amount', 'Enter a number greater than zero.');
 			return;
 		}
 
-		await createExpense({
-			title: trimmedTitle,
-			amount: parsedAmount,
-			category,
-		});
-		setTitle('');
-		setAmount('');
-		setCategory(null);
+		try {
+			await createExpense({
+				title: trimmedTitle || null,
+				amount: parsedAmount,
+				category,
+			});
+			setTitle('');
+			setAmount('');
+			setCategory(null);
+		} catch {
+			Alert.alert('Unable to save', 'Your expense could not be saved. Try again.');
+		}
 	}
 
 	async function handleRemoveExpense(id: string) {

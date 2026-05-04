@@ -49,7 +49,7 @@ export function ExpenseActionsModal({
       <Pressable style={styles.modalBackdrop} onPress={onClose}>
         <Pressable style={styles.modalPanel} onPress={(event) => event.stopPropagation()}>
           <View style={styles.modalHandle} />
-          <Text style={styles.modalTitle}>{expense?.title ?? 'Expense'}</Text>
+          <Text style={styles.modalTitle}>{expense?.title || expense?.category || 'Expense'}</Text>
           {expense ? (
             <Text style={styles.modalSubtitle}>
               Current date: {expenseDateFormatter.format(expense.date)}
@@ -62,7 +62,7 @@ export function ExpenseActionsModal({
               value={dateInput}
               onChangeText={setDateInput}
               placeholder="YYYY-MM-DD"
-              placeholderTextColor="#77717F"
+              placeholderTextColor="#9B8063"
               keyboardType="numbers-and-punctuation"
               style={styles.input}
             />

@@ -62,9 +62,10 @@ export function ExpensesProvider({ children }: PropsWithChildren) {
   }, [refreshExpenses]);
 
   async function addExpense({ title, amount, category }: AddExpenseInput) {
+    const normalizedTitle = title?.trim() || null;
     const localExpense: Expense = {
       id: `${Date.now()}`,
-      title,
+      title: normalizedTitle,
       amount,
       category,
       icon: category ? categoryIcons[category] : uncategorizedIcon,
@@ -91,7 +92,10 @@ export function ExpensesProvider({ children }: PropsWithChildren) {
     setError(null);
 
     try {
-      const remoteExpense = await insertExpense({ title, amount, category }, clerkUserId);
+      const remoteExpense = await insertExpense(
+        { title: normalizedTitle, amount, category },
+        clerkUserId,
+      );
 
       if (remoteExpense) {
         setExpenses((currentExpenses) =>
@@ -192,9 +196,27 @@ export function useExpenses() {
 }
 
 function getErrorMessage(error: unknown) {
+  if (isMissingClerkUserIdColumnError(error)) {
+    return 'Supabase schema is missing clerk_user_id. Run supabase/schema.sql in your project.';
+  }
+
   if (error instanceof Error) {
     return error.message;
   }
 
   return 'Unable to sync expenses.';
+}
+
+function isMissingClerkUserIdColumnError(error: unknown) {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const maybeError = error as { code?: unknown; message?: unknown };
+
+  return (
+    (maybeError.code === 'PGRST204' || maybeError.code === '42703') &&
+    typeof maybeError.message === 'string' &&
+    maybeError.message.includes('clerk_user_id')
+  );
 }

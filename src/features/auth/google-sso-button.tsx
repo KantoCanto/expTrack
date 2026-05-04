@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Pressable, Text } from 'react-native';
 
 import { getAuthErrorMessage } from './auth-errors';
-import { authStyles as styles } from './auth-styles';
 
 type GoogleSsoButtonProps = {
   onError: (message: string) => void;
@@ -40,12 +39,13 @@ export function GoogleSsoButton({ onError }: GoogleSsoButtonProps) {
       accessibilityRole="button"
       disabled={isLoading}
       onPress={handleGoogleSignIn}
-      style={({ pressed }) => [
-        styles.socialButton,
-        isLoading && styles.primaryButtonDisabled,
-        pressed && styles.pressed,
-      ]}>
-      <Text style={styles.socialButtonText}>{isLoading ? 'Connecting...' : 'Continue with Google'}</Text>
+      className={[
+        'min-h-[52px] items-center justify-center rounded-lg border border-[#E4C8A8] bg-[#FBEEDC] active:opacity-[0.78]',
+        isLoading ? 'opacity-[0.54]' : '',
+      ].join(' ')}>
+      <Text className="font-jakarta-extrabold text-[15px] leading-5 text-[#4A2A16]">
+        {isLoading ? 'Connecting...' : 'Continue with Google'}
+      </Text>
     </Pressable>
   );
 }
