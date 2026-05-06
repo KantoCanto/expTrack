@@ -15,6 +15,7 @@ import { ExpenseActionsModal } from '@/features/expenses/components/expense-acti
 import { ExpenseForm } from '@/features/expenses/components/expense-form';
 import { ExpenseList } from '@/features/expenses/components/expense-list';
 import { FilterChips } from '@/features/expenses/components/filter-chips';
+import { MonthlyExpenseGraph } from '@/features/expenses/components/monthly-expense-graph';
 import { SectionHeader } from '@/features/expenses/components/section-header';
 import { SpendingHero } from '@/features/expenses/components/spending-hero';
 import { categories } from '@/features/expenses/expense-data';
@@ -146,6 +147,12 @@ export default function HomeScreen() {
 							onTitleChange={setTitle}
 							title={title}
 						/>
+
+						<SectionHeader
+							title="Monthly graph"
+							meta={`${expenses.length} total expenses`}
+						/>
+						<MonthlyExpenseGraph expenses={expenses} />
 
 						<SectionHeader
 							title="Categories"
