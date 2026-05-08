@@ -1,8 +1,11 @@
 import { useSSO } from '@clerk/expo';
+import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
 import { Pressable, Text } from 'react-native';
 
 import { getAuthErrorMessage } from './auth-errors';
+
+WebBrowser.maybeCompleteAuthSession();
 
 type GoogleSsoButtonProps = {
   onError: (message: string) => void;

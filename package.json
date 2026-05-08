@@ -8,8 +8,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios --device",
     "ios:start": "expo start --ios",
-    "prebuild": "expo prebuild",
-    "prebuild:clean": "expo prebuild --clean",
+    "expo:prebuild": "expo prebuild",
+    "expo:prebuild:clean": "expo prebuild --clean",
     "web": "expo start --web",
     "lint": "expo lint",
     "build": "expo export -p web"
